@@ -19,7 +19,7 @@ jobs:
           curl -v http://git.s.hetmer.net
       - name: Checkout
         run: |
-          SERVER=git.s.hetmer.net
+          SERVER=http://git.s.hetmer.net
           git clone "${SERVER//:\/\//://${{ github.actor }}:${{ secrets.FORGEJO_TOKEN }}@}/${{ github.repository }}.git" "${GITHUB_WORKSPACE}"
 
       - name: Build and Push
