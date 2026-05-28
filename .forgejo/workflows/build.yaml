@@ -5,7 +5,7 @@ jobs:
   build-push:
     runs-on: ubuntu-22.04
     container:
-      image: quay.io/buildah/stable:v1.35
+      image: quay.io/buildah/stable:latest
     
     env:
       BUILDAH_ISOLATION: chroot
