@@ -12,6 +12,7 @@ jobs:
       - name: Build and Push
         env:
           DOCKER_HOST: tcp://podman.c.hetmer.net:2376
+          DOCKER_BUILDKIT: "0"
         run: |
           DOMAIN=git.hetmer.net
           IMAGE="${DOMAIN}/${{ github.repository }}:latest"
