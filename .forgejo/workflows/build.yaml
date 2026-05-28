@@ -5,16 +5,19 @@ jobs:
   build-push:
     runs-on: ubuntu-22.04
     container:
-      image: quay.io/buildah/stable:latest
+      image: quay.io/buildah/stable:v1.35
+    
     env:
       BUILDAH_ISOLATION: chroot
       _BUILDAH_STARTED_IN_USERNS: ""
+      
     steps:
       - uses: actions/checkout@v4
 
       - name: Build and Push
         run: |
-          DOMAIN=$(echo "${{ gitea.server_url }}" | sed 's|https\?://||')
+          # Replaced 'gitea.server_url' with 'github.server_url' to satisfy schema syntax rules
+          DOMAIN=$(echo "${{ github.server_url }}" | sed 's|https\?://||')
           IMAGE="${DOMAIN}/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]'):latest"
 
           buildah login -u "${{ github.actor }}" -p "${{ secrets.FORGEJO_TOKEN }}" "${DOMAIN}"
