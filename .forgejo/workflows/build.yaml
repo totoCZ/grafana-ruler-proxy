@@ -19,23 +19,23 @@ jobs:
           curl -v http://git.s.hetmer.net
       - name: Checkout
         run: |
-          SERVER="${{ github.server_url }}"
+          SERVER=git.s.hetmer.net
           git clone "${SERVER//:\/\//://${{ github.actor }}:${{ secrets.FORGEJO_TOKEN }}@}/${{ github.repository }}.git" "${GITHUB_WORKSPACE}"
 
       - name: Build and Push
         run: |
-          DOMAIN="${{ github.server_url }}"
+          DOMAIN=git.hetmer.net
           DOMAIN="${DOMAIN#*//}"
           REPO="${{ github.repository }}"
           IMAGE="${DOMAIN}/${REPO,,}:latest"
 
           # Tell buildah this registry is insecure (HTTP only)
-          mkdir -p /etc/containers
-          cat > /etc/containers/registries.conf.d/insecure.conf <<EOF
-          [[registry]]
-          location = "${DOMAIN}"
-          insecure = true
-          EOF
+          #mkdir -p /etc/containers
+          #cat > /etc/containers/registries.conf.d/insecure.conf <<EOF
+          #[[registry]]
+          #location = "${DOMAIN}"
+          #insecure = true
+          #EOF
 
           buildah login -u "${{ github.actor }}" -p "${{ secrets.FORGEJO_TOKEN }}" "${DOMAIN}"
           buildah bud -t "${IMAGE}" .
