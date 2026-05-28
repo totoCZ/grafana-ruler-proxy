@@ -12,7 +12,7 @@ jobs:
       - name: Build and Push
         run: |
           DOMAIN=git.hetmer.net
-          IMAGE="${DOMAIN}/${{ github.repository,,}}:latest"
+          IMAGE="${DOMAIN}/${{ github.repository }}:latest"
           echo "${{ secrets.CI_REGISTRY_PUSH }}" | docker login "${DOMAIN}" -u "${{ github.actor }}" --password-stdin
           docker buildx build \
             --label "org.opencontainers.image.source=https://${DOMAIN}/${{ github.repository }}" \
