@@ -22,7 +22,9 @@ jobs:
           DOMAIN=git.hetmer.net
           REPO="${{ github.repository }}"
           IMAGE="${DOMAIN}/${REPO,,}:latest"
-
           buildah login -u "${{ github.actor }}" -p "${{ secrets.FORGEJO_TOKEN }}" "${DOMAIN}"
-          buildah bud --label "org.opencontainers.image.source=https://${DOMAIN}/${{ github.repository }}" -t "${IMAGE}" .
-          buildah push --jobs 1 "${IMAGE}"
+          buildah bud \
+            --format docker \
+            --label "org.opencontainers.image.source=https://${DOMAIN}/${{ github.repository }}" \
+            -t "${IMAGE}" .
+          buildah push "docker://${IMAGE}"
