@@ -4,35 +4,27 @@ on: [push]
 jobs:
   build-push:
     runs-on: ubuntu-22.04
+    container:
+      image: quay.io/buildah/stable:latest
+    
+    env:
+      BUILDAH_ISOLATION: chroot
+      _BUILDAH_STARTED_IN_USERNS: ""
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        run: |
+          SERVER=http://git.s.hetmer.net
+          git clone "${SERVER//:\/\//://${{ github.actor }}:${{ secrets.FORGEJO_TOKEN }}@}/${{ github.repository }}.git" "${GITHUB_WORKSPACE}"
 
-      - name: Install buildah
-        run: sudo apt-get update && sudo apt-get install -y buildah
-
-      - name: Build
-        id: build
-        uses: redhat-actions/buildah-build@v2
-        env:
-          BUILDAH_ISOLATION: chroot
-          _BUILDAH_STARTED_IN_USERNS: ""
-        with:
-          image: ${{ github.repository }}
-          tags: latest
-          containerfiles: ./Dockerfile
-          format: docker
-          extra-args: |
-            --storage-driver vfs
-          labels: |
-            org.opencontainers.image.source=https://git.hetmer.net/${{ github.repository }}
-
-      - name: Push
-        uses: redhat-actions/push-to-registry@v2
-        with:
-          image: ${{ steps.build.outputs.image }}
-          tags: ${{ steps.build.outputs.tags }}
-          registry: git.hetmer.net
-          username: ${{ github.actor }}
-          password: ${{ secrets.CI_REGISTRY_PUSH }}
+      - name: Build and Push
+        run: |
+          DOMAIN=git.hetmer.net
+          REPO="${{ github.repository }}"
+          IMAGE="${DOMAIN}/${REPO,,}:latest"
+          buildah login -u "${{ github.actor }}" -p "${{ secrets.CI_REGISTRY_PUSH }}" "${DOMAIN}"
+          buildah bud \
+            --format docker \
+            --label "org.opencontainers.image.source=https://${DOMAIN}/${{ github.repository }}" \
+            -t "${IMAGE}" .
+          buildah push "${IMAGE}"
