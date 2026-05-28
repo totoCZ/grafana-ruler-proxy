@@ -15,6 +15,9 @@ jobs:
       - name: Build
         id: build
         uses: redhat-actions/buildah-build@v2
+        env:
+          BUILDAH_ISOLATION: chroot
+          _BUILDAH_STARTED_IN_USERNS: ""
         with:
           image: ${{ github.repository }}
           tags: latest
