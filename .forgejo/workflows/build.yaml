@@ -20,10 +20,9 @@ jobs:
       - name: Build and Push
         run: |
           DOMAIN=git.hetmer.net
-          DOMAIN="${DOMAIN#*//}"
           REPO="${{ github.repository }}"
           IMAGE="${DOMAIN}/${REPO,,}:latest"
 
-          buildah login -u "${{ github.actor }}" -p "${{ secrets.CI_REGISTRY_PUSH }}" "${DOMAIN}"
-          buildah bud -t "${IMAGE}" .
-          buildah push "${IMAGE}"
+          buildah login -u "${{ github.actor }}" -p "${{ secrets.FORGEJO_TOKEN }}" "${DOMAIN}"
+          buildah bud --label "org.opencontainers.image.source=https://${DOMAIN}/${{ github.repository }}" -t "${IMAGE}" .
+          buildah push --jobs 1 "${IMAGE}"
