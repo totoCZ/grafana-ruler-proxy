@@ -11,12 +11,6 @@ jobs:
       BUILDAH_ISOLATION: chroot
       _BUILDAH_STARTED_IN_USERNS: ""
       
-    steps:
-      - name: Debug curl
-        run: |
-          curl --version
-          curl -v6 http://git.s.hetmer.net
-          curl -v http://git.s.hetmer.net
       - name: Checkout
         run: |
           SERVER=http://git.s.hetmer.net
@@ -28,14 +22,6 @@ jobs:
           DOMAIN="${DOMAIN#*//}"
           REPO="${{ github.repository }}"
           IMAGE="${DOMAIN}/${REPO,,}:latest"
-
-          # Tell buildah this registry is insecure (HTTP only)
-          #mkdir -p /etc/containers
-          #cat > /etc/containers/registries.conf.d/insecure.conf <<EOF
-          #[[registry]]
-          #location = "${DOMAIN}"
-          #insecure = true
-          #EOF
 
           buildah login -u "${{ github.actor }}" -p "${{ secrets.FORGEJO_TOKEN }}" "${DOMAIN}"
           buildah bud -t "${IMAGE}" .
