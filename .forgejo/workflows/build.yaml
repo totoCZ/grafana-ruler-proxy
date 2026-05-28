@@ -3,7 +3,7 @@ on: [push]
 
 jobs:
   build-push:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container:
       image: quay.io/buildah/stable:latest
 
