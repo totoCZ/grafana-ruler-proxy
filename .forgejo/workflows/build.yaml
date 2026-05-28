@@ -29,6 +29,14 @@ jobs:
           REPO="${{ github.repository }}"
           IMAGE="${DOMAIN}/${REPO,,}:latest"
 
+          # Tell buildah this registry is insecure (HTTP only)
+          mkdir -p /etc/containers
+          cat > /etc/containers/registries.conf.d/insecure.conf <<EOF
+          [[registry]]
+          location = "${DOMAIN}"
+          insecure = true
+          EOF
+
           buildah login -u "${{ github.actor }}" -p "${{ secrets.FORGEJO_TOKEN }}" "${DOMAIN}"
           buildah bud -t "${IMAGE}" .
           buildah push "${IMAGE}"
