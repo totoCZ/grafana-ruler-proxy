@@ -10,7 +10,8 @@ jobs:
     env:
       BUILDAH_ISOLATION: chroot
       _BUILDAH_STARTED_IN_USERNS: ""
-      
+
+    steps:
       - name: Checkout
         run: |
           SERVER=http://git.s.hetmer.net
