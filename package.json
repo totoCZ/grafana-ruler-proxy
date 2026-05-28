@@ -1,0 +1,13 @@
+{
+  "name": "grafana-ruler-proxy",
+  "version": "1.0.0",
+  "description": "Grafana Ruler API proxy for Prometheus — enables editable alert rules UI",
+  "main": "grafana-ruler-proxy.js",
+  "scripts": {
+    "start": "node grafana-ruler-proxy.js"
+  },
+  "dependencies": {
+    "http-proxy-middleware": "^3.0.3",
+    "yaml": "^2.7.0"
+  }
+}
