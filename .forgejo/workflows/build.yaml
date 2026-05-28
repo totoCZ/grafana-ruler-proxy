@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-22.04
     container:
       image: quay.io/buildah/stable:latest
-    
+
     env:
       BUILDAH_ISOLATION: chroot
       _BUILDAH_STARTED_IN_USERNS: ""
@@ -14,17 +14,17 @@ jobs:
     steps:
       - name: Checkout
         run: |
-          SERVER=http://git.s.hetmer.net
-          git clone "${SERVER//:\/\//://${{ github.actor }}:${{ secrets.FORGEJO_TOKEN }}@}/${{ github.repository }}.git" "${GITHUB_WORKSPACE}"
+          git clone "http://${{ github.actor }}:${{ secrets.FORGEJO_TOKEN }}@git.s.hetmer.net/${{ github.repository }}.git" "${GITHUB_WORKSPACE}"
 
       - name: Build and Push
         run: |
-          DOMAIN=git.hetmer.net
-          REPO="${{ github.repository }}"
-          IMAGE="${DOMAIN}/${REPO,,}:latest"
-          buildah login -u "${{ github.actor }}" -p "${{ secrets.CI_REGISTRY_PUSH }}" "${DOMAIN}"
+          IMAGE="git.hetmer.net/${{ github.repository }}:latest"
+          buildah login \
+            -u "${{ github.actor }}" \
+            -p "${{ secrets.CI_REGISTRY_PUSH }}" \
+            git.hetmer.net
           buildah bud \
             --format docker \
-            --label "org.opencontainers.image.source=https://${DOMAIN}/${{ github.repository }}" \
+            --label "org.opencontainers.image.source=https://git.hetmer.net/${{ github.repository }}" \
             -t "${IMAGE}" .
           buildah push "${IMAGE}"
