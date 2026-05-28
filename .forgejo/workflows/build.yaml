@@ -12,7 +12,12 @@ jobs:
       _BUILDAH_STARTED_IN_USERNS: ""
       
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        run: |
+          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+          git clone \
+            "https://${{ github.actor }}:${{ secrets.FORGEJO_TOKEN }}@$(echo '${{ github.server_url }}' | sed 's|https://||')/${{ github.repository }}.git" \
+            "${GITHUB_WORKSPACE}"
 
       - name: Build and Push
         run: |
