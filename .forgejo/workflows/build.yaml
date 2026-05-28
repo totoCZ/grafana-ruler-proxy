@@ -1,0 +1,22 @@
+name: Build and Push
+on: [push]
+
+jobs:
+  build-push:
+    runs-on: ubuntu-22.04
+    container:
+      image: quay.io/buildah/stable:latest
+    env:
+      BUILDAH_ISOLATION: chroot
+      _BUILDAH_STARTED_IN_USERNS: ""
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and Push
+        run: |
+          DOMAIN=$(echo "${{ gitea.server_url }}" | sed 's|https\?://||')
+          IMAGE="${DOMAIN}/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]'):latest"
+
+          buildah login -u "${{ github.actor }}" -p "${{ secrets.FORGEJO_TOKEN }}" "${DOMAIN}"
+          buildah bud -t "${IMAGE}" .
+          buildah push "${IMAGE}"
