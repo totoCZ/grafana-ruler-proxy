@@ -12,6 +12,11 @@ jobs:
       _BUILDAH_STARTED_IN_USERNS: ""
       
     steps:
+      - name: Debug curl
+        run: |
+          curl --version
+          curl -v6 http://git.s.hetmer.net
+          curl -v http://git.s.hetmer.net
       - name: Checkout
         run: |
           SERVER="${{ github.server_url }}"
