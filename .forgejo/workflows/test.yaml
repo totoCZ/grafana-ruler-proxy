@@ -10,11 +10,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build and Push
+        env:
+          DOCKER_HOST: tcp://podman.c.hetmer.net:2376
         run: |
           DOMAIN=git.hetmer.net
           IMAGE="${DOMAIN}/${{ github.repository }}:latest"
           echo "${{ secrets.CI_REGISTRY_PUSH }}" | docker login "${DOMAIN}" -u "${{ github.actor }}" --password-stdin
-          docker buildx build \
+          docker build \
             --label "org.opencontainers.image.source=https://${DOMAIN}/${{ github.repository }}" \
-            --push \
             -t "${IMAGE}" .
+          docker push "${IMAGE}"
