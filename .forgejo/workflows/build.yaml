@@ -23,6 +23,8 @@ jobs:
           tags: latest
           containerfiles: ./Dockerfile
           format: docker
+          extra-args: |
+            --storage-driver vfs
           labels: |
             org.opencontainers.image.source=https://git.hetmer.net/${{ github.repository }}
 
