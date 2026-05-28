@@ -27,4 +27,4 @@ jobs:
             --format docker \
             --label "org.opencontainers.image.source=https://${DOMAIN}/${{ github.repository }}" \
             -t "${IMAGE}" .
-          buildah push "docker://${IMAGE}"
+          buildah push "${IMAGE}"
