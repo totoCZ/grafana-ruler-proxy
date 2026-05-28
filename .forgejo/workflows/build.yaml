@@ -14,16 +14,15 @@ jobs:
     steps:
       - name: Checkout
         run: |
-          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
-          git clone \
-            "https://${{ github.actor }}:${{ secrets.FORGEJO_TOKEN }}@$(echo '${{ github.server_url }}' | sed 's|https://||')/${{ github.repository }}.git" \
-            "${GITHUB_WORKSPACE}"
+          SERVER="${{ github.server_url }}"
+          git clone "${SERVER//:\/\//://${{ github.actor }}:${{ secrets.FORGEJO_TOKEN }}@}/${{ github.repository }}.git" "${GITHUB_WORKSPACE}"
 
       - name: Build and Push
         run: |
-          # Replaced 'gitea.server_url' with 'github.server_url' to satisfy schema syntax rules
-          DOMAIN=$(echo "${{ github.server_url }}" | sed 's|https\?://||')
-          IMAGE="${DOMAIN}/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]'):latest"
+          DOMAIN="${{ github.server_url }}"
+          DOMAIN="${DOMAIN#*//}"
+          REPO="${{ github.repository }}"
+          IMAGE="${DOMAIN}/${REPO,,}:latest"
 
           buildah login -u "${{ github.actor }}" -p "${{ secrets.FORGEJO_TOKEN }}" "${DOMAIN}"
           buildah bud -t "${IMAGE}" .
