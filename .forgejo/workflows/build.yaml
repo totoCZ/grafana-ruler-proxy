@@ -20,6 +20,6 @@ jobs:
             REGISTRY=git.hetmer.net &&
             IMAGE=${REGISTRY}/${{ github.repository }}:latest &&
             buildah login -u '${{ github.actor }}' -p '${{ secrets.CI_REGISTRY_PUSH }}' ${REGISTRY} &&
-            buildah bud --format docker --label 'org.opencontainers.image.source=https://${REGISTRY}/${{ github.repository }}' -t ${IMAGE} . &&
+            buildah bud --format docker --label "org.opencontainers.image.source=https://${REGISTRY}/${{ github.repository }}" -t ${IMAGE} . &&
             buildah push ${IMAGE}
             "
