@@ -1,6 +1,6 @@
 name: Build and Push
-on: [push]
-
+on:
+  - push
 jobs:
   build-push:
     runs-on: ubuntu-latest
@@ -10,11 +10,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Build and Push
         uses: docker://quay.io/buildah/stable:latest
-		run: |
+        run: >
           IMAGE="git.hetmer.net/${{ github.repository }}:latest"
+
           buildah login \
             -u "${{ github.actor }}" \
             -p "${{ secrets.CI_REGISTRY_PUSH }}" \
