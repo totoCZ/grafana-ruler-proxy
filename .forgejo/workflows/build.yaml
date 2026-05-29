@@ -4,27 +4,21 @@ on: [push]
 jobs:
   build-push:
     runs-on: ubuntu-latest
-    container:
-      image: quay.io/buildah/stable:latest
-
     env:
       BUILDAH_ISOLATION: chroot
       _BUILDAH_STARTED_IN_USERNS: ""
-
     steps:
       - name: Checkout
-        run: |
-          git clone "http://${{ github.actor }}:${{ secrets.FORGEJO_TOKEN }}@git.s.hetmer.net/${{ github.repository }}.git" "${GITHUB_WORKSPACE}"
+        uses: actions/checkout@v4
 
       - name: Build and Push
-        run: |
-          IMAGE="git.hetmer.net/${{ github.repository }}:latest"
-          buildah login \
-            -u "${{ github.actor }}" \
-            -p "${{ secrets.CI_REGISTRY_PUSH }}" \
-            git.hetmer.net
-          buildah bud \
-            --format docker \
-            --label "org.opencontainers.image.source=https://git.hetmer.net/${{ github.repository }}" \
-            -t "${IMAGE}" .
-          buildah push "${IMAGE}"
+        uses: docker://quay.io/buildah/stable:latest
+        with:
+          entrypoint: /bin/sh
+          args: >-
+            -c "
+            IMAGE='git.hetmer.net/${{ github.repository }}:latest' &&
+            buildah login -u '${{ github.actor }}' -p '${{ secrets.CI_REGISTRY_PUSH }}' git.hetmer.net &&
+            buildah bud --format docker --label 'org.opencontainers.image.source=https://git.hetmer.net/${{ github.repository }}' -t ${IMAGE} . &&
+            buildah push ${IMAGE}
+            "
