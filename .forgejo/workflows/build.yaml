@@ -13,12 +13,14 @@ jobs:
 
       - name: Build and Push
         uses: docker://quay.io/buildah/stable:latest
-        with:
-          entrypoint: /bin/sh
-          args: >-
-            -c "
-            IMAGE='git.hetmer.net/${{ github.repository }}:latest' &&
-            buildah login -u '${{ github.actor }}' -p '${{ secrets.CI_REGISTRY_PUSH }}' git.hetmer.net &&
-            buildah bud --format docker --label 'org.opencontainers.image.source=https://git.hetmer.net/${{ github.repository }}' -t ${IMAGE} . &&
-            buildah push ${IMAGE}
-            "
+		run: |
+          IMAGE="git.hetmer.net/${{ github.repository }}:latest"
+          buildah login \
+            -u "${{ github.actor }}" \
+            -p "${{ secrets.CI_REGISTRY_PUSH }}" \
+            git.hetmer.net
+          buildah bud \
+            --format docker \
+            --label "org.opencontainers.image.source=https://git.hetmer.net/${{ github.repository }}" \
+            -t "${IMAGE}" .
+          buildah push "${IMAGE}"
